@@ -1,31 +1,105 @@
-import React from "react";
-import { PlusIcon } from "../../assets";
+import React from 'react'
+import { css, styled } from 'styled-components'
 
-export const Button = ({ onClick, disabled }) => {
-  return (
-    <>
-      <button onClick={onClick} disabled={disabled} style={AddedButton}>
-        <PlusIcon />
-        Add
-      </button>
-    </>
-  );
-};
+const BUTTON_VARIANTS = {
+	outlined: {
+		backgroundColor: 'transparent',
+		color: '#8a2b06',
+		backgroundColorOnHover: '#8a2b06',
+		backgroundColorOnActive: '#993108',
+		disabled: {
+			backgroundColor: 'transparent',
+			color: '#cac6c4',
+		},
+	},
+	contained: {
+		backgroundColor: '#8a2b06',
+		color: '#fff',
+		backgroundColorOnHover: '#7e2a0a',
+		backgroundColorOnActive: '#993108',
+		disabled: {
+			backgroundColor: '#cac6c4',
+			color: '#fff',
+		},
+	},
+}
 
-const AddedButton = {
-  display: "flex",
-  width: "99px",
-  height: "41px",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: "20px",
-  gap: "5px",
-  border: "none",
-  color: "white",
-  backgroundColor: "#8A2B06",
-  fontSize: "14px",
-  fontWeight: "700",
-  letterSpacing: "0.42px",
-  marginLeft: '55px',
-  marginTop: '16px'
-};
+const getStylesByVariant = (variant) => {
+	const currentVariant = BUTTON_VARIANTS[variant]
+	return css`
+		background-color: ${currentVariant.backgroundColor};
+		color: ${currentVariant.color};
+		&:hover {
+			background-color: ${currentVariant.backgroundColorOnHover};
+		}
+		&:active {
+			background-color: ${currentVariant.backgroundColorOnActive};
+		}
+		&:disabled {
+			background-color: ${currentVariant.disabled.backgroundColor};
+			color: ${currentVariant.disabled.color};
+		}
+	`
+}
+
+const BUTTON_SIZES = {
+	small: '14px',
+	medium: '16px',
+	large: '18px',
+}
+
+export const Button = ({
+	children,
+	onClick,
+	disabled,
+	variant = 'contained',
+	size = 'medium',
+	IconComponent = null,
+	type = 'submit',
+	...restProps
+}) => {
+	const isHasIcon = Boolean(IconComponent)
+	return (
+		<StyledButton
+			onClick={onClick}
+			disabled={disabled}
+			variant={variant}
+			icon={String(isHasIcon)}
+			size={size}
+			{...restProps}
+		>
+			{isHasIcon && <IconComponent />}
+			{children}
+		</StyledButton>
+	)
+}
+
+const StyledButton = styled('button')`
+	outline: none;
+	cursor: pointer;
+	padding: 0.625rem 2rem;
+	border-radius: 20px;
+	border: none;
+	font-weight: 500;
+	border: 1px solid #8a2b06;
+	color: white;
+	&:hover {
+		color: white;
+	}
+	&:disabled {
+		border: 1px solid #cac6c4;
+		cursor: not-allowed;
+	}
+	transition: all 0.1s ease-out;
+	${(props) => getStylesByVariant(props.variant || 'contained')}
+	${(props) => {
+		if (props.icon === 'false') return null
+		return css`
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			font-weight: 700;
+		`
+	}};
+	font-size: ${(props) => BUTTON_SIZES[props.size || 'medium']};
+`
